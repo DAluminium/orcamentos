@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<!-- saved from url=(0200)file:///C:/Users/keyss/AppData/Local/Packages/5319275A.WhatsAppDesktop_cv1g1gvanyjgm/LocalState/sessions/47C4E8BDC834D5D4BD22D8DD63F12B3705D9A4B8/transfers/2026-28/caderno_orcamentos_daluminium_1.html -->
-<html lang="pt-BR"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Caderno de Orçamentos · Daluminium</title>
 <style>
@@ -108,278 +108,79 @@ svg.icon{width:14px;height:14px;vertical-align:middle;fill:none;stroke:currentCo
 <div class="topbar">
   <div class="topbar-logo">DALUMINIUM <span>Caderno de Orçamentos</span></div>
   <div class="topbar-actions">
-    <span id="sync-status" style="font-size: 12px; display: flex; align-items: center; gap: 5px; opacity: 0.85; color: rgba(255, 255, 255, 0.8);">🟢 Sincronizado · 16:23:02</span>
+    <span id="sync-status" style="font-size:12px;display:flex;align-items:center;gap:5px;opacity:.85"></span>
+    <button class="btn btn-ghost btn-sm" onclick="imprimirCaderno()">
+      <svg class="icon" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Imprimir caderno
+    </button>
     <button class="btn btn-ghost btn-sm" onclick="openSetup()" title="Configurar sincronização">
-      <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"></path></svg>
+      <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
       Sincronizar
     </button>
     <button class="btn btn-ghost btn-sm" onclick="importData()">
-      <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>Importar
+      <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Importar
     </button>
     <button class="btn btn-ghost btn-sm" onclick="exportData()">
-      <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>Exportar
+      <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Exportar
     </button>
   </div>
 </div>
 
 <div class="main">
   <div class="sync-notice">
-    <svg style="width:16px;height:16px;flex-shrink:0;margin-top:1px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+    <svg style="width:16px;height:16px;flex-shrink:0;margin-top:1px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
     <span>Dados e anexos salvos neste navegador. Para compartilhar com a equipe use <strong>Exportar / Importar</strong>. O ícone <strong>📎</strong> em cada linha permite anexar PDFs, imagens e orçamentos para imprimir.</span>
   </div>
 
   <div class="summary">
-    <div class="card card-urgent"><div class="card-label">Urgentes</div><div class="card-count" id="c-u-count">5 obras</div><div class="card-value" id="c-u-val">R$ 51.521,08</div></div>
-    <div class="card card-important"><div class="card-label">Importantes</div><div class="card-count" id="c-i-count">2 obras</div><div class="card-value" id="c-i-val">R$ 17.760,13</div></div>
-    <div class="card card-paid"><div class="card-label">Obras pagas</div><div class="card-count" id="c-p-count">3 obras</div><div class="card-value" id="c-p-val">R$ 2.340,64</div></div>
-    <div class="card card-total"><div class="card-label">Total em aberto</div><div class="card-count">urgentes + importantes</div><div class="card-value" id="c-t-val">R$ 69.281,21</div></div>
+    <div class="card card-urgent"><div class="card-label">Urgentes</div><div class="card-count" id="c-u-count">0 obras</div><div class="card-value" id="c-u-val">R$ 0,00</div></div>
+    <div class="card card-important"><div class="card-label">Importantes</div><div class="card-count" id="c-i-count">0 obras</div><div class="card-value" id="c-i-val">R$ 0,00</div></div>
+    <div class="card card-paid"><div class="card-label">Obras pagas</div><div class="card-count" id="c-p-count">0 obras</div><div class="card-value" id="c-p-val">R$ 0,00</div></div>
+    <div class="card card-total"><div class="card-label">Total em aberto</div><div class="card-count">urgentes + importantes</div><div class="card-value" id="c-t-val">R$ 0,00</div></div>
   </div>
 
   <div class="tabs-bar">
-    <button class="tab-btn tab-urgent active" onclick="setTab(&#39;urgente&#39;,this)">🔴 Urgentes</button>
-    <button class="tab-btn tab-important" onclick="setTab(&#39;importante&#39;,this)">🟡 Importantes</button>
-    <button class="tab-btn tab-paid" onclick="setTab(&#39;pago&#39;,this)">🟢 Obras pagas</button>
+    <button class="tab-btn tab-urgent active" onclick="setTab('urgente',this)">🔴 Urgentes</button>
+    <button class="tab-btn tab-important" onclick="setTab('importante',this)">🟡 Importantes</button>
+    <button class="tab-btn tab-paid" onclick="setTab('pago',this)">🟢 Obras pagas</button>
   </div>
 
   <div id="panel-urgente" class="panel">
     <div class="panel-header">
-      <div class="panel-title"><span class="badge badge-urgent" id="badge-u">5</span>Orçamentos urgentes</div>
-      <button class="btn btn-teal btn-sm" onclick="openModal(&#39;urgente&#39;)">
-        <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>Novo orçamento
+      <div class="panel-title"><span class="badge badge-urgent" id="badge-u">0</span>Orçamentos urgentes</div>
+      <button class="btn btn-teal btn-sm" onclick="openModal('urgente')">
+        <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Novo orçamento
       </button>
     </div>
     <div class="table-wrap"><table>
       <thead><tr><th>#</th><th>Obra / Cliente</th><th>Material</th><th>Nº Orç.</th><th>Fornecedor</th><th>Valor</th><th>Data Orç.</th><th>Entrega</th><th>Status</th><th>Anexos</th><th style="text-align:right">Ações</th></tr></thead>
-      <tbody id="tbody-urgente"><tr>
-      <td class="td-num">1</td>
-      <td class="td-obra">Osvaldo Canizares - INIG<span class="td-by">por Ander</span></td>
-      <td>Perfil Alumínio</td>
-      <td style="color:var(--gray-4)">75332</td>
-      <td>Morais Alumínio<span class="td-by" style="display:flex;align-items:center;gap:3px"><svg style="width:10px;height:10px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>59258036000112</span></td>
-      <td class="td-valor">R$&nbsp;25.635,00</td>
-      <td>02/06/2026</td>
-      <td>16/06/2026</td>
-      
-      <td><span class="pill pill-atrasada">Atrasada</span></td>
-      <td><button class="act act-attach has-files" onclick="openAttach(&#39;urgente&#39;,0)" title="1 anexo(s)">
-      <svg class="icon" viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
-      <span style="font-size:10px;margin-left:1px">1</span>
-    </button></td>
-      <td class="td-actions">
-        <button class="act" onclick="editEntry(&#39;urgente&#39;,0)" title="Editar"><svg class="icon" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
-        
-        <button class="act act-move-important" onclick="moveEntry(&#39;urgente&#39;,&#39;importante&#39;,0)" title="Mover para Importantes 🟡"><svg class="icon" viewBox="0 0 24 24"><polyline points="17 6 12 11 7 6"></polyline><polyline points="17 13 12 18 7 13"></polyline></svg></button>
-        <button class="act act-pay" onclick="markPaid(&#39;urgente&#39;,0)" title="Marcar como pago"><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></button>
-        <button class="act act-del" onclick="removeEntry(&#39;urgente&#39;,0)" title="Remover"><svg class="icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg></button>
-      </td>
-    </tr><tr>
-      <td class="td-num">2</td>
-      <td class="td-obra">Adolfo Theodoro<span class="td-by">por Ander</span></td>
-      <td>Kit Cremona</td>
-      <td style="color:var(--gray-4)">21685</td>
-      <td>Mirandex<span class="td-by" style="display:flex;align-items:center;gap:3px"><svg style="width:10px;height:10px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>03727410000127</span></td>
-      <td class="td-valor">R$&nbsp;2.246,51</td>
-      <td>26/06/2026</td>
-      <td>25/06/2026</td>
-      
-      <td><span class="pill pill-atrasada">Atrasada</span></td>
-      <td><button class="act act-attach has-files" onclick="openAttach(&#39;urgente&#39;,1)" title="1 anexo(s)">
-      <svg class="icon" viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
-      <span style="font-size:10px;margin-left:1px">1</span>
-    </button></td>
-      <td class="td-actions">
-        <button class="act" onclick="editEntry(&#39;urgente&#39;,1)" title="Editar"><svg class="icon" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
-        
-        <button class="act act-move-important" onclick="moveEntry(&#39;urgente&#39;,&#39;importante&#39;,1)" title="Mover para Importantes 🟡"><svg class="icon" viewBox="0 0 24 24"><polyline points="17 6 12 11 7 6"></polyline><polyline points="17 13 12 18 7 13"></polyline></svg></button>
-        <button class="act act-pay" onclick="markPaid(&#39;urgente&#39;,1)" title="Marcar como pago"><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></button>
-        <button class="act act-del" onclick="removeEntry(&#39;urgente&#39;,1)" title="Remover"><svg class="icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg></button>
-      </td>
-    </tr><tr>
-      <td class="td-num">3</td>
-      <td class="td-obra">Adi Bordignon/Cristiane Ferraz<span class="td-by">por Ander</span></td>
-      <td>Perfil Alumínio</td>
-      <td style="color:var(--gray-4)">19011</td>
-      <td>Morais Alumínio<span class="td-by" style="display:flex;align-items:center;gap:3px"><svg style="width:10px;height:10px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>59258036000112</span></td>
-      <td class="td-valor">R$&nbsp;11.620,00</td>
-      <td>05/06/2026</td>
-      <td>27/06/2026</td>
-      
-      <td><span class="pill pill-atrasada">Atrasada</span></td>
-      <td><button class="act act-attach has-files" onclick="openAttach(&#39;urgente&#39;,2)" title="1 anexo(s)">
-      <svg class="icon" viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
-      <span style="font-size:10px;margin-left:1px">1</span>
-    </button></td>
-      <td class="td-actions">
-        <button class="act" onclick="editEntry(&#39;urgente&#39;,2)" title="Editar"><svg class="icon" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
-        
-        <button class="act act-move-important" onclick="moveEntry(&#39;urgente&#39;,&#39;importante&#39;,2)" title="Mover para Importantes 🟡"><svg class="icon" viewBox="0 0 24 24"><polyline points="17 6 12 11 7 6"></polyline><polyline points="17 13 12 18 7 13"></polyline></svg></button>
-        <button class="act act-pay" onclick="markPaid(&#39;urgente&#39;,2)" title="Marcar como pago"><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></button>
-        <button class="act act-del" onclick="removeEntry(&#39;urgente&#39;,2)" title="Remover"><svg class="icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg></button>
-      </td>
-    </tr><tr>
-      <td class="td-num">4</td>
-      <td class="td-obra">Adolfo Theodoro<span class="td-by">por Ander</span></td>
-      <td>Perfil Alumínio</td>
-      <td style="color:var(--gray-4)">20634</td>
-      <td>Mirandex<span class="td-by" style="display:flex;align-items:center;gap:3px"><svg style="width:10px;height:10px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>03727410000127</span></td>
-      <td class="td-valor">R$&nbsp;4.644,57</td>
-      <td>23/06/2026</td>
-      <td>25/06/2026</td>
-      
-      <td><span class="pill pill-atrasada">Atrasada</span></td>
-      <td><button class="act act-attach has-files" onclick="openAttach(&#39;urgente&#39;,3)" title="1 anexo(s)">
-      <svg class="icon" viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
-      <span style="font-size:10px;margin-left:1px">1</span>
-    </button></td>
-      <td class="td-actions">
-        <button class="act" onclick="editEntry(&#39;urgente&#39;,3)" title="Editar"><svg class="icon" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
-        
-        <button class="act act-move-important" onclick="moveEntry(&#39;urgente&#39;,&#39;importante&#39;,3)" title="Mover para Importantes 🟡"><svg class="icon" viewBox="0 0 24 24"><polyline points="17 6 12 11 7 6"></polyline><polyline points="17 13 12 18 7 13"></polyline></svg></button>
-        <button class="act act-pay" onclick="markPaid(&#39;urgente&#39;,3)" title="Marcar como pago"><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></button>
-        <button class="act act-del" onclick="removeEntry(&#39;urgente&#39;,3)" title="Remover"><svg class="icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg></button>
-      </td>
-    </tr><tr>
-      <td class="td-num">5</td>
-      <td class="td-obra">Lui Contador<span class="td-by">por Ander</span></td>
-      <td>Perfil Alumínio</td>
-      <td style="color:var(--gray-4)">22758</td>
-      <td>Mirandex<span class="td-by" style="display:flex;align-items:center;gap:3px"><svg style="width:10px;height:10px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>03727410000127</span></td>
-      <td class="td-valor">R$&nbsp;7.375,00</td>
-      <td>30/06/2026</td>
-      <td>18/08/2026</td>
-      
-      <td><span class="pill pill-pendente">Pendente</span></td>
-      <td><button class="act act-attach has-files" onclick="openAttach(&#39;urgente&#39;,4)" title="1 anexo(s)">
-      <svg class="icon" viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
-      <span style="font-size:10px;margin-left:1px">1</span>
-    </button></td>
-      <td class="td-actions">
-        <button class="act" onclick="editEntry(&#39;urgente&#39;,4)" title="Editar"><svg class="icon" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
-        
-        <button class="act act-move-important" onclick="moveEntry(&#39;urgente&#39;,&#39;importante&#39;,4)" title="Mover para Importantes 🟡"><svg class="icon" viewBox="0 0 24 24"><polyline points="17 6 12 11 7 6"></polyline><polyline points="17 13 12 18 7 13"></polyline></svg></button>
-        <button class="act act-pay" onclick="markPaid(&#39;urgente&#39;,4)" title="Marcar como pago"><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></button>
-        <button class="act act-del" onclick="removeEntry(&#39;urgente&#39;,4)" title="Remover"><svg class="icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg></button>
-      </td>
-    </tr></tbody>
+      <tbody id="tbody-urgente"></tbody>
     </table></div>
-    <div class="panel-footer">Total em aberto: <strong id="t-urgente">R$ 51.521,08</strong></div>
+    <div class="panel-footer">Total em aberto: <strong id="t-urgente">R$ 0,00</strong></div>
   </div>
 
   <div id="panel-importante" class="panel" style="display:none">
     <div class="panel-header">
-      <div class="panel-title"><span class="badge badge-important" id="badge-i">2</span>Orçamentos importantes</div>
-      <button class="btn btn-sm" style="background:var(--amber);color:white;border-color:var(--amber)" onclick="openModal(&#39;importante&#39;)">
-        <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>Novo orçamento
+      <div class="panel-title"><span class="badge badge-important" id="badge-i">0</span>Orçamentos importantes</div>
+      <button class="btn btn-sm" style="background:var(--amber);color:white;border-color:var(--amber)" onclick="openModal('importante')">
+        <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Novo orçamento
       </button>
     </div>
     <div class="table-wrap"><table>
       <thead><tr><th>#</th><th>Obra / Cliente</th><th>Material</th><th>Nº Orç.</th><th>Fornecedor</th><th>Valor</th><th>Data Orç.</th><th>Entrega</th><th>Status</th><th>Anexos</th><th style="text-align:right">Ações</th></tr></thead>
-      <tbody id="tbody-importante"><tr>
-      <td class="td-num">1</td>
-      <td class="td-obra">Lucas Niero<span class="td-by">por Ander</span></td>
-      <td>Chapas ACM</td>
-      <td style="color:var(--gray-4)">146670</td>
-      <td>Projeto Alumínio<span class="td-by" style="display:flex;align-items:center;gap:3px"><svg style="width:10px;height:10px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>96162276000145</span></td>
-      <td class="td-valor">R$&nbsp;14.382,71</td>
-      <td>26/06/2026</td>
-      <td>17/10/2025</td>
-      
-      <td><span class="pill pill-atrasada">Atrasada</span></td>
-      <td><button class="act act-attach has-files" onclick="openAttach(&#39;importante&#39;,0)" title="1 anexo(s)">
-      <svg class="icon" viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
-      <span style="font-size:10px;margin-left:1px">1</span>
-    </button></td>
-      <td class="td-actions">
-        <button class="act" onclick="editEntry(&#39;importante&#39;,0)" title="Editar"><svg class="icon" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
-        <button class="act act-move-urgent" onclick="moveEntry(&#39;importante&#39;,&#39;urgente&#39;,0)" title="Mover para Urgentes 🔴"><svg class="icon" viewBox="0 0 24 24"><polyline points="17 11 12 6 7 11"></polyline><polyline points="17 18 12 13 7 18"></polyline></svg></button>
-        
-        <button class="act act-pay" onclick="markPaid(&#39;importante&#39;,0)" title="Marcar como pago"><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></button>
-        <button class="act act-del" onclick="removeEntry(&#39;importante&#39;,0)" title="Remover"><svg class="icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg></button>
-      </td>
-    </tr><tr>
-      <td class="td-num">2</td>
-      <td class="td-obra">Lucas Niero<span class="td-by">por Ander</span></td>
-      <td>Acessórios</td>
-      <td style="color:var(--gray-4)">CW33233/25</td>
-      <td>Keso<span class="td-by" style="display:flex;align-items:center;gap:3px"><svg style="width:10px;height:10px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>clayton@keso.com.br</span></td>
-      <td class="td-valor">R$&nbsp;3.377,42</td>
-      <td>01/07/2026</td>
-      <td>17/10/2025</td>
-      
-      <td><span class="pill pill-atrasada">Atrasada</span></td>
-      <td><button class="act act-attach has-files" onclick="openAttach(&#39;importante&#39;,1)" title="1 anexo(s)">
-      <svg class="icon" viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
-      <span style="font-size:10px;margin-left:1px">1</span>
-    </button></td>
-      <td class="td-actions">
-        <button class="act" onclick="editEntry(&#39;importante&#39;,1)" title="Editar"><svg class="icon" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
-        <button class="act act-move-urgent" onclick="moveEntry(&#39;importante&#39;,&#39;urgente&#39;,1)" title="Mover para Urgentes 🔴"><svg class="icon" viewBox="0 0 24 24"><polyline points="17 11 12 6 7 11"></polyline><polyline points="17 18 12 13 7 18"></polyline></svg></button>
-        
-        <button class="act act-pay" onclick="markPaid(&#39;importante&#39;,1)" title="Marcar como pago"><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></button>
-        <button class="act act-del" onclick="removeEntry(&#39;importante&#39;,1)" title="Remover"><svg class="icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg></button>
-      </td>
-    </tr></tbody>
+      <tbody id="tbody-importante"></tbody>
     </table></div>
-    <div class="panel-footer">Total: <strong id="t-importante">R$ 17.760,13</strong></div>
+    <div class="panel-footer">Total: <strong id="t-importante">R$ 0,00</strong></div>
   </div>
 
   <div id="panel-pago" class="panel" style="display:none">
     <div class="panel-header">
-      <div class="panel-title"><span class="badge badge-paid" id="badge-p">3</span>Obras pagas</div>
+      <div class="panel-title"><span class="badge badge-paid" id="badge-p">0</span>Obras pagas</div>
     </div>
     <div class="table-wrap"><table>
       <thead><tr><th>#</th><th>Obra / Cliente</th><th>Material</th><th>Nº Orç.</th><th>Fornecedor</th><th>Valor</th><th>Data Orç.</th><th>Entrega</th><th>Data Pag.</th><th>Anexos</th><th style="text-align:right">Ações</th></tr></thead>
-      <tbody id="tbody-pago"><tr>
-      <td class="td-num">1</td>
-      <td class="td-obra">Paulo Adriano<span class="td-by">por Ander</span></td>
-      <td>Silicone</td>
-      <td style="color:var(--gray-4)">212169</td>
-      <td>Distribuidora Cometal</td>
-      <td class="td-valor">R$&nbsp;421,00</td>
-      <td>01/06/2026</td>
-      <td>11/05/2026</td>
-      <td>03/07/2026</td>
-      <td><span class="pill pill-pago">Pago</span></td>
-      <td><button class="act act-attach " onclick="openAttach(&#39;pago&#39;,0)" title="Adicionar anexo">
-      <svg class="icon" viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
-      
-    </button></td>
-      <td class="td-actions"><button class="act act-del" onclick="removeEntry(&#39;pago&#39;,0)" title="Remover"><svg class="icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg></button></td>
-    </tr><tr>
-      <td class="td-num">2</td>
-      <td class="td-obra">Heverton Mendes Barbosa<span class="td-by">por Ander</span></td>
-      <td>Perfil Alumínio</td>
-      <td style="color:var(--gray-4)">21547</td>
-      <td>Mirandex</td>
-      <td class="td-valor">R$&nbsp;723,73</td>
-      <td>25/06/2026</td>
-      <td>01/07/2026</td>
-      <td>03/07/2026</td>
-      <td><span class="pill pill-pago">Pago</span></td>
-      <td><button class="act act-attach " onclick="openAttach(&#39;pago&#39;,1)" title="Adicionar anexo">
-      <svg class="icon" viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
-      
-    </button></td>
-      <td class="td-actions"><button class="act act-del" onclick="removeEntry(&#39;pago&#39;,1)" title="Remover"><svg class="icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg></button></td>
-    </tr><tr>
-      <td class="td-num">3</td>
-      <td class="td-obra">Wanderley - Casa 89 e 113<span class="td-by">por Ander</span></td>
-      <td>Acessórios</td>
-      <td style="color:var(--gray-4)">21707</td>
-      <td>Mirandex</td>
-      <td class="td-valor">R$&nbsp;1.195,91</td>
-      <td>26/06/2026</td>
-      <td>—</td>
-      <td>03/07/2026</td>
-      <td><span class="pill pill-pago">Pago</span></td>
-      <td><button class="act act-attach " onclick="openAttach(&#39;pago&#39;,2)" title="Adicionar anexo">
-      <svg class="icon" viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
-      
-    </button></td>
-      <td class="td-actions"><button class="act act-del" onclick="removeEntry(&#39;pago&#39;,2)" title="Remover"><svg class="icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg></button></td>
-    </tr></tbody>
+      <tbody id="tbody-pago"></tbody>
     </table></div>
-    <div class="panel-footer">Total pago: <strong id="t-pago">R$ 2.340,64</strong></div>
+    <div class="panel-footer">Total pago: <strong id="t-pago">R$ 0,00</strong></div>
   </div>
 </div>
 
@@ -388,7 +189,7 @@ svg.icon{width:14px;height:14px;vertical-align:middle;fill:none;stroke:currentCo
   <div class="modal">
     <div class="modal-header">
       <div class="modal-title" id="modal-title">Novo orçamento</div>
-      <button class="act" onclick="closeModal()"><svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+      <button class="act" onclick="closeModal()"><svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="modal-body">
       <div class="form-grid">
@@ -423,21 +224,21 @@ svg.icon{width:14px;height:14px;vertical-align:middle;fill:none;stroke:currentCo
   <div class="modal attach-modal">
     <div class="modal-header">
       <div class="modal-title" id="attach-title">Anexos do orçamento</div>
-      <button class="act" onclick="closeAttach()"><svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+      <button class="act" onclick="closeAttach()"><svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="modal-body">
-      <div class="attach-zone" id="attach-zone" onclick="document.getElementById(&#39;file-attach-input&#39;).click()" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFile(event)">
-        <svg style="width:28px;height:28px;color:var(--gray-3)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+      <div class="attach-zone" id="attach-zone" onclick="document.getElementById('file-attach-input').click()" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFile(event)">
+        <svg style="width:28px;height:28px;color:var(--gray-3)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
         <p><strong>Clique para adicionar</strong> ou arraste aqui</p>
         <p>PDF, JPEG, PNG — sem limite de tamanho</p>
       </div>
-      <input type="file" id="file-attach-input" accept=".pdf,.jpg,.jpeg,.png" multiple="" style="display:none" onchange="handleAttachFiles(event)">
+      <input type="file" id="file-attach-input" accept=".pdf,.jpg,.jpeg,.png" multiple style="display:none" onchange="handleAttachFiles(event)">
       <div id="attach-file-list" style="margin-top:12px;display:flex;flex-direction:column;gap:8px"></div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="closeAttach()">Fechar</button>
       <button class="btn btn-teal" onclick="printAll()">
-        <svg class="icon" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>Imprimir tudo
+        <svg class="icon" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Imprimir tudo
       </button>
     </div>
   </div>
@@ -448,18 +249,18 @@ svg.icon{width:14px;height:14px;vertical-align:middle;fill:none;stroke:currentCo
   <div class="modal" style="width:min(500px,100%)">
     <div class="modal-header">
       <div class="modal-title" id="setup-title">Configurar sincronização em equipe</div>
-      <button class="act" onclick="closeSetup()"><svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+      <button class="act" onclick="closeSetup()"><svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="modal-body" id="setup-body">
-      <div id="setup-step-choose" style="display: none;">
+      <div id="setup-step-choose">
         <p style="font-size:13px;color:var(--gray-5);margin-bottom:1rem">Como você quer conectar?</p>
         <div style="display:flex;flex-direction:column;gap:10px">
-          <button class="btn btn-teal" style="justify-content:flex-start;padding:12px 16px" onclick="showStep(&#39;criar&#39;)">
-            <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          <button class="btn btn-teal" style="justify-content:flex-start;padding:12px 16px" onclick="showStep('criar')">
+            <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             <span><strong>Sou o primeiro</strong> — criar novo espaço da equipe</span>
           </button>
-          <button class="btn btn-outline" style="justify-content:flex-start;padding:12px 16px" onclick="showStep(&#39;entrar&#39;)">
-            <svg class="icon" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+          <button class="btn btn-outline" style="justify-content:flex-start;padding:12px 16px" onclick="showStep('entrar')">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
             <span><strong>Já tenho o código</strong> — entrar no espaço da equipe</span>
           </button>
         </div>
@@ -476,12 +277,12 @@ svg.icon{width:14px;height:14px;vertical-align:middle;fill:none;stroke:currentCo
         </div>
         <div id="setup-erro-criar" style="display:none;font-size:12px;color:var(--red);margin-top:6px"></div>
         <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px">
-          <button class="btn btn-outline" onclick="showStep(&#39;choose&#39;)">Voltar</button>
+          <button class="btn btn-outline" onclick="showStep('choose')">Voltar</button>
           <button class="btn btn-teal" id="btn-criar" onclick="criarEspaco()">Criar espaço da equipe</button>
         </div>
       </div>
 
-      <div id="setup-step-entrar" style="display: block;">
+      <div id="setup-step-entrar" style="display:none">
         <p style="font-size:13px;color:var(--gray-5);margin-bottom:14px">
           Cole o <strong>Código da Equipe</strong> que o responsável compartilhou com você.
         </p>
@@ -491,7 +292,7 @@ svg.icon{width:14px;height:14px;vertical-align:middle;fill:none;stroke:currentCo
         </div>
         <div id="setup-erro-entrar" style="display:none;font-size:12px;color:var(--red);margin-top:6px"></div>
         <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px">
-          <button class="btn btn-outline" onclick="showStep(&#39;choose&#39;)">Voltar</button>
+          <button class="btn btn-outline" onclick="showStep('choose')">Voltar</button>
           <button class="btn btn-teal" onclick="entrarEspaco()">Conectar</button>
         </div>
       </div>
@@ -867,6 +668,196 @@ async function removeAttach(idx){
   persist(); render(); renderAttachList();
 }
 
+// ---- IMPRIMIR CADERNO ----
+function imprimirCaderno(){
+  const su=data.urgente.reduce((a,r)=>a+Number(r.valor||0),0);
+  const si=data.importante.reduce((a,r)=>a+Number(r.valor||0),0);
+  const sp=data.pago.reduce((a,r)=>a+Number(r.valor||0),0);
+
+  function fD(d){if(!d||d==='—')return'—';try{const[y,m,dd]=d.split('-');return`${dd}/${m}/${y}`}catch{return d||'—'}}
+  function fV(v){return Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}
+  function sClass(s){return s==='Atrasada'?'color:#C0392B;font-weight:600':s==='OK'?'color:#1A7A45;font-weight:600':'color:#5A6370'}
+
+  function buildTable(rows, isPago){
+    const cols = isPago
+      ? ['#','Obra / Cliente','Material','Nº Orç.','Fornecedor','Valor','Data Orç.','Entrega','Data Pag.']
+      : ['#','Obra / Cliente','Material','Nº Orç.','Fornecedor','Valor','Data Orç.','Entrega','Status'];
+    const widths = isPago
+      ? ['4%','18%','11%','8%','13%','9%','8%','8%','8%']
+      : ['4%','18%','11%','8%','13%','9%','8%','8%','8%'];
+    let html=`<table><thead><tr>${cols.map((c,i)=>`<th style="width:${widths[i]}">${c}</th>`).join('')}</tr></thead><tbody>`;
+    if(!rows.length){
+      html+=`<tr><td colspan="${cols.length}" style="text-align:center;color:#9AA1AB;padding:16px">Nenhum orçamento cadastrado.</td></tr>`;
+    } else {
+      rows.forEach((r,i)=>{
+        const extra = isPago
+          ? `<td>${fD(r.dataPag)}</td>`
+          : `<td style="${sClass(r.status)}">${r.status||'Pendente'}</td>`;
+        html+=`<tr>
+          <td style="color:#9AA1AB">${i+1}</td>
+          <td><strong>${r.obra}</strong>${r.by?`<br><span style="font-size:9px;color:#9AA1AB">por ${r.by}</span>`:''}</td>
+          <td>${r.material||'—'}</td>
+          <td style="color:#9AA1AB">${r.nrOrc||'—'}</td>
+          <td>${r.fornecedor}${r.pix?`<br><span style="font-size:9px;color:#9AA1AB">PIX: ${r.pix}</span>`:''}</td>
+          <td><strong>R$ ${fV(r.valor)}</strong></td>
+          <td>${fD(r.dataOrc)}</td>
+          <td>${fD(r.entrega)}</td>
+          ${extra}
+        </tr>`;
+      });
+    }
+    html+=`</tbody></table>`;
+    return html;
+  }
+
+  function totalRow(label, count, value, color){
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:${color}15;border-left:3px solid ${color};border-radius:4px;margin-bottom:8px">
+      <span style="font-size:12px;font-weight:600;color:${color}">${label} <span style="font-weight:400;color:#5A6370">(${count} obra${count!==1?'s':''})</span></span>
+      <span style="font-size:14px;font-weight:700;color:${color}">R$ ${fV(value)}</span>
+    </div>`;
+  }
+
+  const now = new Date().toLocaleDateString('pt-BR');
+
+  const html=`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
+<title>Caderno de Orçamentos · Daluminium</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:11px;color:#23282F;background:white}
+.page{width:100%;padding:20mm 16mm 16mm;page-break-after:always;min-height:270mm}
+.page:last-child{page-break-after:avoid}
+.page-header{display:flex;align-items:center;justify-content:space-between;padding-bottom:10px;border-bottom:2px solid #0E8FA6;margin-bottom:16px}
+.page-header-left h1{font-size:22px;font-weight:700;color:#0E8FA6;letter-spacing:.04em}
+.page-header-left p{font-size:11px;color:#9AA1AB;margin-top:2px}
+.page-header-right{font-size:10px;color:#9AA1AB;text-align:right}
+.section-title{font-size:15px;font-weight:700;margin-bottom:10px;padding:8px 12px;border-radius:6px;display:flex;align-items:center;justify-content:space-between}
+.section-urgent{background:#FDF0EE;color:#C0392B;border-left:4px solid #C0392B}
+.section-important{background:#FEF7E6;color:#B9770E;border-left:4px solid #B9770E}
+.section-paid{background:#EDFAF3;color:#1A7A45;border-left:4px solid #1A7A45}
+.section-cover{background:#E6F8FB;color:#0E8FA6;border-left:4px solid #0E8FA6}
+table{width:100%;border-collapse:collapse;font-size:10px;margin-bottom:12px}
+thead th{padding:6px 8px;text-align:left;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#9AA1AB;border-bottom:1px solid #DEE1E5;background:#F7F8F9;white-space:nowrap}
+tbody td{padding:7px 8px;border-bottom:1px solid #EEF0F2;vertical-align:top}
+tbody tr:last-child td{border-bottom:none}
+.total-bar{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:4px;margin-top:4px;font-size:11px}
+.fields-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px}
+.field-box{border:1px solid #DEE1E5;border-radius:6px;padding:10px 12px}
+.field-box .label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.field-box .count{font-size:10px;color:#9AA1AB;margin-bottom:3px}
+.field-box .value{font-size:16px;font-weight:700}
+.footer{margin-top:12px;padding-top:8px;border-top:1px solid #EEF0F2;display:flex;justify-content:space-between;font-size:9px;color:#9AA1AB}
+@media print{
+  body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .page{padding:15mm 12mm 12mm}
+}
+</style>
+</head><body>
+
+<!-- CAPA PRINCIPAL -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h1>DALUMINIUM</h1>
+      <p>Caderno de Orçamentos · Emitido em ${now}</p>
+    </div>
+    <div class="page-header-right">Ciclo / Período: ____________________________<br>Responsável: ______________________________</div>
+  </div>
+
+  <div class="section-title section-cover" style="margin-bottom:16px">
+    <span>RESUMO GERAL — TODAS AS OBRAS</span>
+    <span style="font-size:18px;font-weight:700">R$ ${fV(su+si)}</span>
+  </div>
+
+  <div class="fields-row">
+    <div class="field-box" style="border-left:3px solid #C0392B">
+      <div class="label" style="color:#C0392B">Urgentes</div>
+      <div class="count">${data.urgente.length} obra${data.urgente.length!==1?'s':''} em aberto</div>
+      <div class="value" style="color:#C0392B">R$ ${fV(su)}</div>
+    </div>
+    <div class="field-box" style="border-left:3px solid #B9770E">
+      <div class="label" style="color:#B9770E">Importantes</div>
+      <div class="count">${data.importante.length} obra${data.importante.length!==1?'s':''}</div>
+      <div class="value" style="color:#B9770E">R$ ${fV(si)}</div>
+    </div>
+    <div class="field-box" style="border-left:3px solid #1A7A45">
+      <div class="label" style="color:#1A7A45">Obras pagas</div>
+      <div class="count">${data.pago.length} obra${data.pago.length!==1?'s':''}</div>
+      <div class="value" style="color:#1A7A45">R$ ${fV(sp)}</div>
+    </div>
+  </div>
+
+  ${totalRow('ORÇAMENTOS URGENTES',data.urgente.length,su,'#C0392B')}
+  ${totalRow('ORÇAMENTOS IMPORTANTES',data.importante.length,si,'#B9770E')}
+  ${totalRow('OBRAS PAGAS',data.pago.length,sp,'#1A7A45')}
+
+  <div class="footer">
+    <span>Daluminium · Caderno de Orçamentos</span>
+    <span>Capa Principal · ${now}</span>
+  </div>
+</div>
+
+<!-- SUBCAPA URGENTES -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h1>DALUMINIUM</h1>
+      <p>Caderno de Orçamentos · Emitido em ${now}</p>
+    </div>
+    <div class="page-header-right">Atualizado em: _______________<br>Ciclo: _______________________</div>
+  </div>
+  <div class="section-title section-urgent"><span>ORÇAMENTOS URGENTES</span><span>${data.urgente.length} obra${data.urgente.length!==1?'s':''}</span></div>
+  ${buildTable(data.urgente,false)}
+  <div class="total-bar" style="background:#FDF0EE;color:#C0392B">
+    <strong>TOTAL GERAL — URGENTES</strong>
+    <strong>R$ ${fV(su)}</strong>
+  </div>
+  <div class="footer"><span>Daluminium · Caderno de Orçamentos</span><span>Subcapa Urgentes · ${now}</span></div>
+</div>
+
+<!-- SUBCAPA IMPORTANTES -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h1>DALUMINIUM</h1>
+      <p>Caderno de Orçamentos · Emitido em ${now}</p>
+    </div>
+    <div class="page-header-right">Atualizado em: _______________<br>Ciclo: _______________________</div>
+  </div>
+  <div class="section-title section-important"><span>ORÇAMENTOS IMPORTANTES</span><span>${data.importante.length} obra${data.importante.length!==1?'s':''}</span></div>
+  ${buildTable(data.importante,false)}
+  <div class="total-bar" style="background:#FEF7E6;color:#B9770E">
+    <strong>TOTAL GERAL — IMPORTANTES</strong>
+    <strong>R$ ${fV(si)}</strong>
+  </div>
+  <div class="footer"><span>Daluminium · Caderno de Orçamentos</span><span>Subcapa Importantes · ${now}</span></div>
+</div>
+
+<!-- SUBCAPA PAGAS -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h1>DALUMINIUM</h1>
+      <p>Caderno de Orçamentos · Emitido em ${now}</p>
+    </div>
+    <div class="page-header-right">Atualizado em: _______________<br>Ciclo: _______________________</div>
+  </div>
+  <div class="section-title section-paid"><span>OBRAS PAGAS</span><span>${data.pago.length} obra${data.pago.length!==1?'s':''}</span></div>
+  ${buildTable(data.pago,true)}
+  <div class="total-bar" style="background:#EDFAF3;color:#1A7A45">
+    <strong>TOTAL GERAL — PAGAS</strong>
+    <strong>R$ ${fV(sp)}</strong>
+  </div>
+  <div class="footer"><span>Daluminium · Caderno de Orçamentos</span><span>Subcapa Pagas · ${now}</span></div>
+</div>
+
+<script>window.onload=function(){window.print()}<\/script>
+</body></html>`;
+
+  const w=window.open('','_blank');
+  w.document.write(html);
+  w.document.close();
+}
+
 // ---- JSONBIN SYNC ----
 const BIN_API = 'https://api.jsonbin.io/v3/b';
 let syncInterval = null;
@@ -1050,6 +1041,5 @@ document.addEventListener('keydown',function(e){ if(e.key==='Escape'){ closeModa
 
 openDB().then(load);
 </script>
-
-
-</body></html>
+</body>
+</html>
