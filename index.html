@@ -558,17 +558,16 @@ function renderAttachList(){
     const isPdf=a.type==='application/pdf';
     const iconClass=isPdf?'file-icon-pdf':'file-icon-img';
     const iconLabel=isPdf?'PDF':'IMG';
-    return`<div class="file-item">
+    const isOld=!a.url||a.url==='undefined';
+    return`<div class="file-item" style="${isOld?'border-color:#F5D98A;background:#FFFBF0':''}">
       <div class="file-icon ${iconClass}">${iconLabel}</div>
       <div class="file-info">
-        <div class="file-name">${a.name}</div>
-        <div class="file-size">${fmtSize(a.size)}</div>
+        <div class="file-name">${a.name}${isOld?' ⚠️':''}</div>
+        <div class="file-size">${isOld?'<span style="color:#B9770E">Re-anexar necessário</span>':fmtSize(a.size)}</div>
       </div>
       <div class="file-actions">
-        <button class="btn btn-outline btn-sm" onclick="viewFile('${a.id}','${a.type}','${a.name}','${a.url}')">${isPdf?'Abrir':'Ver'}</button>
-        <button class="btn btn-outline btn-sm" onclick="downloadFile('${a.id}','${a.type}','${a.name}','${a.url}')" title="Baixar">
-          <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        </button>
+        ${isOld?'':`<button class="btn btn-outline btn-sm" onclick="viewFile('${a.id}','${a.type}','${a.name}','${a.url}')">${isPdf?'Abrir':'Ver'}</button>`}
+        ${isOld?'':`<button class="btn btn-outline btn-sm" onclick="downloadFile('${a.id}','${a.type}','${a.name}','${a.url}')" title="Baixar"><svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>`}
         <button class="act act-del" onclick="removeAttach(${i})" title="Remover anexo"><svg class="icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
       </div>
     </div>`;
@@ -620,12 +619,20 @@ async function dropFile(e){
 }
 
 function viewFile(id,type,name,url){
+  if(!url||url==='undefined'){
+    alert('Este anexo foi salvo antes da atualização para a nuvem.\nPor favor remova-o (🗑️) e anexe novamente.');
+    return;
+  }
   const isPdf=(type||'').includes('pdf');
   if(isPdf){ window.open(url,'_blank'); }
   else { showImagePreview(url,name); }
 }
 
 function downloadFile(id,type,name,url){
+  if(!url||url==='undefined'){
+    alert('Este anexo foi salvo antes da atualização para a nuvem.\nPor favor remova-o (🗑️) e anexe novamente.');
+    return;
+  }
   const a=document.createElement('a');
   a.href=url; a.download=name||'arquivo'; a.target='_blank';
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
