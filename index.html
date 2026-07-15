@@ -350,9 +350,6 @@ async function uploadToCloudinary(file){
   fd.append('file', file);
   fd.append('upload_preset', UPLOAD_PRESET);
   fd.append('folder', 'daluminium_orcamentos');
-  fd.append('use_filename', 'true');
-  fd.append('unique_filename', 'true');
-  if(isPdf) fd.append('flags', 'attachment');
   const r = await fetch(uploadUrl, {method:'POST', body:fd});
   if(!r.ok){ const t=await r.text(); throw new Error('Erro no upload: '+r.status+' '+t); }
   const j = await r.json();
