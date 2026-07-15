@@ -238,7 +238,7 @@ svg.icon{width:14px;height:14px;vertical-align:middle;fill:none;stroke:currentCo
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="closeAttach()">Fechar</button>
       <button class="btn btn-teal" onclick="printAll()">
-        <svg class="icon" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Imprimir tudo
+        <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Baixar todos
       </button>
     </div>
   </div>
@@ -584,9 +584,9 @@ function renderAttachList(){
         <div class="file-size">${fmtSize(a.size)}</div>
       </div>
       <div class="file-actions">
-        <button class="btn btn-outline btn-sm" onclick="viewFile('${a.id}','${a.type}')">Ver</button>
-        <button class="btn btn-outline btn-sm" onclick="printFile('${a.id}','${a.type}','${a.name}')">
-          <svg class="icon" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        <button class="btn btn-outline btn-sm" onclick="viewFile('${a.id}','${a.type}','${a.name}')">${isPdf?'Baixar':'Ver'}</button>
+        <button class="btn btn-outline btn-sm" onclick="downloadFile('${a.id}','${a.type}','${a.name}')" title="Baixar">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         </button>
         <button class="act act-del" onclick="removeAttach(${i})" title="Remover anexo"><svg class="icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
       </div>
@@ -626,36 +626,70 @@ async function dropFile(e){
   persist(); render(); renderAttachList();
 }
 
-async function viewFile(id,type){
-  const f=await getFile(id);
-  if(!f) return;
-  const blob=new Blob([f.data],{type:f.type||type});
-  const url=URL.createObjectURL(blob);
-  window.open(url,'_blank');
-}
-
-async function printFile(id,type,name){
+async function viewFile(id,type,name){
   const f=await getFile(id);
   if(!f) return;
   const blob=new Blob([f.data],{type:f.type||type});
   const url=URL.createObjectURL(blob);
   const isPdf=(f.type||type)==='application/pdf';
   if(isPdf){
-    const w=window.open(url,'_blank');
-    w.onload=()=>{ w.print(); };
+    // PDFs: force download (most reliable on mobile)
+    const a=document.createElement('a');
+    a.href=url; a.download=name||f.name||'orcamento.pdf'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url),5000);
   } else {
-    const w=window.open('','_blank');
-    w.document.write(`<html><body style="margin:0"><img src="${url}" style="max-width:100%;display:block" onload="window.print()"></body></html>`);
-    w.document.close();
+    // Images: show inline preview
+    showImagePreview(url,name||f.name);
   }
+}
+
+async function downloadFile(id,type,name){
+  const f=await getFile(id);
+  if(!f) return;
+  const blob=new Blob([f.data],{type:f.type||type});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download=name||f.name||'arquivo'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),5000);
+}
+
+function showImagePreview(url,name){
+  let overlay=document.getElementById('img-preview-overlay');
+  if(!overlay){
+    overlay=document.createElement('div');
+    overlay.id='img-preview-overlay';
+    overlay.style.cssText='display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:500;align-items:center;justify-content:center;flex-direction:column;padding:1rem';
+    overlay.innerHTML=`
+      <div style="position:absolute;top:16px;right:16px;display:flex;gap:8px">
+        <button id="img-dl-btn" class="btn btn-outline btn-sm">Baixar</button>
+        <button onclick="closeImagePreview()" style="background:rgba(255,255,255,0.15);border:none;color:white;padding:6px 12px;border-radius:8px;font-size:13px;cursor:pointer">✕ Fechar</button>
+      </div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.6);margin-bottom:10px;max-width:90vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" id="img-preview-name"></div>
+      <img id="img-preview-img" style="max-width:90vw;max-height:80vh;border-radius:8px;object-fit:contain" src="">`;
+    overlay.addEventListener('click',function(e){if(e.target===this)closeImagePreview();});
+    document.body.appendChild(overlay);
+  }
+  document.getElementById('img-preview-name').textContent=name||'';
+  document.getElementById('img-preview-img').src=url;
+  document.getElementById('img-dl-btn').onclick=()=>{const a=document.createElement('a');a.href=url;a.download=name||'imagem';a.click();};
+  overlay.style.display='flex';
+}
+function closeImagePreview(){
+  const o=document.getElementById('img-preview-overlay');
+  if(o) o.style.display='none';
+}
+
+async function printFile(id,type,name){
+  // On mobile, just download — printing from mobile is not reliable
+  await downloadFile(id,type,name);
 }
 
 async function printAll(){
   const r=data[attachType][attachIdx];
-  if(!r.attachments||!r.attachments.length){ alert('Nenhum anexo para imprimir.'); return; }
+  if(!r.attachments||!r.attachments.length){ alert('Nenhum anexo para baixar.'); return; }
   for(const a of r.attachments){
-    await printFile(a.id,a.type,a.name);
-    await new Promise(res=>setTimeout(res,600));
+    await downloadFile(a.id,a.type,a.name);
+    await new Promise(res=>setTimeout(res,500));
   }
 }
 
