@@ -350,6 +350,9 @@ async function uploadToCloudinary(file){
   fd.append('file', file);
   fd.append('upload_preset', UPLOAD_PRESET);
   fd.append('folder', 'daluminium_orcamentos');
+  fd.append('use_filename', 'true');
+  fd.append('unique_filename', 'true');
+  if(isPdf) fd.append('flags', 'attachment');
   const r = await fetch(uploadUrl, {method:'POST', body:fd});
   if(!r.ok){ const t=await r.text(); throw new Error('Erro no upload: '+r.status+' '+t); }
   const j = await r.json();
@@ -627,19 +630,10 @@ async function viewFile(id,type,name,url){
   }
   const isPdf=(type||'').includes('pdf');
   if(isPdf){
-    // Fetch PDF as blob to bypass CORS viewer restrictions
-    try{
-      const resp = await fetch(url);
-      const blob = await resp.blob();
-      const blobUrl = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = blobUrl; a.download = name||'orcamento.pdf';
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
-      setTimeout(()=>URL.revokeObjectURL(blobUrl), 5000);
-    }catch(e){
-      // Fallback: direct open
-      window.open(url,'_blank');
-    }
+    // Open Cloudinary URL directly — raw files download automatically
+    const a=document.createElement('a');
+    a.href=url; a.target='_blank'; a.rel='noopener';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
   } else {
     showImagePreview(url,name);
   }
