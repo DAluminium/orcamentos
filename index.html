@@ -701,6 +701,51 @@ function imprimirCaderno(){
   const si=data.importante.reduce((a,r)=>a+Number(r.valor||0),0);
   const sp=data.pago.reduce((a,r)=>a+Number(r.valor||0),0);
 
+  // Build alert lists for print
+  const today=new Date(); today.setHours(0,0,0,0);
+  const overdue=[],dueToday=[],dueSoon=[];
+  [...data.urgente,...data.importante].forEach(r=>{
+    if(!r.entrega||r.entrega==='—') return;
+    const dt=new Date(r.entrega); dt.setHours(0,0,0,0);
+    const diff=Math.round((dt-today)/(1000*60*60*24));
+    const label=`${r.obra} — ${r.fornecedor} (R$ ${Number(r.valor).toLocaleString('pt-BR',{minimumFractionDigits:2})})`;
+    const entregaStr=r.entrega?r.entrega.split('-').reverse().join('/'):'';
+    if(diff<0) overdue.push({label,days:Math.abs(diff),entrega:entregaStr});
+    else if(diff===0) dueToday.push({label,entrega:entregaStr});
+    else if(diff<=3) dueSoon.push({label,days:diff,entrega:entregaStr});
+  });
+
+  function alertSection(){
+    if(!overdue.length&&!dueToday.length&&!dueSoon.length) return '';
+    let html=`<div style="margin-top:16px">
+      <div style="font-size:13px;font-weight:700;color:#23282F;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #DEE1E5">
+        📋 PAINEL DE ALERTAS — DATA DE HOJE: ${today.toLocaleDateString('pt-BR')}
+      </div>`;
+    if(overdue.length){
+      html+=`<div style="background:#FDF0EE;border-left:4px solid #C0392B;border-radius:4px;padding:8px 12px;margin-bottom:8px">
+        <div style="font-size:11px;font-weight:700;color:#C0392B;margin-bottom:6px">🚨 ENTREGA ATRASADA (${overdue.length})</div>
+        <table style="width:100%;border-collapse:collapse;font-size:10px">
+          ${overdue.map(o=>`<tr><td style="padding:3px 0;border-bottom:1px solid #f5c4c4;width:65%">${o.label}</td><td style="text-align:right;color:#C0392B;font-weight:700;padding:3px 0;border-bottom:1px solid #f5c4c4">Entrega: ${o.entrega} · ${o.days} dia${o.days>1?'s':''} atrasado</td></tr>`).join('')}
+        </table></div>`;
+    }
+    if(dueToday.length){
+      html+=`<div style="background:#FEF7E6;border-left:4px solid #B9770E;border-radius:4px;padding:8px 12px;margin-bottom:8px">
+        <div style="font-size:11px;font-weight:700;color:#B9770E;margin-bottom:6px">📅 ENTREGA HOJE (${dueToday.length})</div>
+        <table style="width:100%;border-collapse:collapse;font-size:10px">
+          ${dueToday.map(o=>`<tr><td style="padding:3px 0;border-bottom:1px solid #f5d98a;width:65%">${o.label}</td><td style="text-align:right;color:#B9770E;font-weight:700;padding:3px 0;border-bottom:1px solid #f5d98a">Entrega: ${o.entrega}</td></tr>`).join('')}
+        </table></div>`;
+    }
+    if(dueSoon.length){
+      html+=`<div style="background:#E6F8FB;border-left:4px solid #0E8FA6;border-radius:4px;padding:8px 12px;margin-bottom:8px">
+        <div style="font-size:11px;font-weight:700;color:#0E8FA6;margin-bottom:6px">⏰ ENTREGA NOS PRÓXIMOS 3 DIAS (${dueSoon.length})</div>
+        <table style="width:100%;border-collapse:collapse;font-size:10px">
+          ${dueSoon.map(o=>`<tr><td style="padding:3px 0;border-bottom:1px solid #b2e5ee;width:65%">${o.label}</td><td style="text-align:right;color:#0E8FA6;font-weight:700;padding:3px 0;border-bottom:1px solid #b2e5ee">Entrega: ${o.entrega} · em ${o.days} dia${o.days>1?'s':''}</td></tr>`).join('')}
+        </table></div>`;
+    }
+    html+=`</div>`;
+    return html;
+  }
+
   function fD(d){if(!d||d==='—')return'—';try{const[y,m,dd]=d.split('-');return`${dd}/${m}/${y}`}catch{return d||'—'}}
   function fV(v){return Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}
   function sClass(s){return s==='Atrasada'?'color:#C0392B;font-weight:600':s==='OK'?'color:#1A7A45;font-weight:600':'color:#5A6370'}
@@ -816,6 +861,8 @@ tbody tr:last-child td{border-bottom:none}
   ${totalRow('ORÇAMENTOS URGENTES',data.urgente.length,su,'#C0392B')}
   ${totalRow('ORÇAMENTOS IMPORTANTES',data.importante.length,si,'#B9770E')}
   ${totalRow('OBRAS PAGAS',data.pago.length,sp,'#1A7A45')}
+
+  ${alertSection()}
 
   <div class="footer">
     <span>Daluminium · Caderno de Orçamentos</span>
