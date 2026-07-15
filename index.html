@@ -338,39 +338,20 @@ let editId = null;
 let modalType = 'urgente';
 let lastBy = '';
 
-// ---- INDEXEDDB FOR FILES ----
-let db = null;
-function openDB(){
-  return new Promise((res,rej)=>{
-    const req = indexedDB.open('DaluminiumFiles',1);
-    req.onupgradeneeded = e => { e.target.result.createObjectStore('files',{keyPath:'id'}); };
-    req.onsuccess = e => { db = e.target.result; res(db); };
-    req.onerror = rej;
-  });
-}
-function saveFile(fileObj){
-  return new Promise((res,rej)=>{
-    const tx = db.transaction('files','readwrite');
-    tx.objectStore('files').put(fileObj);
-    tx.oncomplete = () => res();
-    tx.onerror = rej;
-  });
-}
-function getFile(id){
-  return new Promise((res,rej)=>{
-    const tx = db.transaction('files','readonly');
-    const req = tx.objectStore('files').get(id);
-    req.onsuccess = () => res(req.result);
-    req.onerror = rej;
-  });
-}
-function deleteFile(id){
-  return new Promise((res,rej)=>{
-    const tx = db.transaction('files','readwrite');
-    tx.objectStore('files').delete(id);
-    tx.oncomplete = () => res();
-    tx.onerror = rej;
-  });
+// ---- CLOUDINARY FILE STORAGE ----
+const CLOUD_NAME = 'ks3znltm';
+const UPLOAD_PRESET = 'daluminium';
+const CLOUD_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`;
+
+async function uploadToCloudinary(file){
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('upload_preset', UPLOAD_PRESET);
+  fd.append('folder', 'daluminium_orcamentos');
+  const r = await fetch(CLOUD_URL, {method:'POST', body:fd});
+  if(!r.ok) throw new Error('Erro no upload: '+r.status);
+  const j = await r.json();
+  return { id: j.public_id, url: j.secure_url, name: file.name, type: file.type, size: file.size };
 }
 
 // ---- HELPERS ----
@@ -530,7 +511,7 @@ function editEntry(type,idx){ openModal(type,idx); }
 function removeEntry(type,idx){
   if(!confirm('Remover este orçamento e todos os seus anexos?')) return;
   const r=data[type][idx];
-  (r.attachments||[]).forEach(a=>deleteFile(a.id).catch(()=>{}));
+  (r.attachments||[]).forEach(()=>{}); // files remain on Cloudinary
   data[type].splice(idx,1);
   persist(); render();
 }
@@ -584,8 +565,8 @@ function renderAttachList(){
         <div class="file-size">${fmtSize(a.size)}</div>
       </div>
       <div class="file-actions">
-        <button class="btn btn-outline btn-sm" onclick="viewFile('${a.id}','${a.type}','${a.name}')">${isPdf?'Baixar':'Ver'}</button>
-        <button class="btn btn-outline btn-sm" onclick="downloadFile('${a.id}','${a.type}','${a.name}')" title="Baixar">
+        <button class="btn btn-outline btn-sm" onclick="viewFile('${a.id}','${a.type}','${a.name}','${a.url}')">${isPdf?'Abrir':'Ver'}</button>
+        <button class="btn btn-outline btn-sm" onclick="downloadFile('${a.id}','${a.type}','${a.name}','${a.url}')" title="Baixar">
           <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         </button>
         <button class="act act-del" onclick="removeAttach(${i})" title="Remover anexo"><svg class="icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
@@ -599,13 +580,19 @@ async function handleAttachFiles(e){
   if(!files.length) return;
   const r=data[attachType][attachIdx];
   if(!r.attachments) r.attachments=[];
-  for(const file of files){
-    const id=genId();
-    const buf=await file.arrayBuffer();
-    await saveFile({id,name:file.name,type:file.type,size:file.size,data:buf});
-    r.attachments.push({id,name:file.name,type:file.type,size:file.size});
+  const zone=document.getElementById('attach-zone');
+  const origHTML=zone.innerHTML;
+  zone.innerHTML='<p style="color:var(--teal-dark);font-weight:600">⏳ Enviando para a nuvem...</p>';
+  try{
+    for(const file of files){
+      const att=await uploadToCloudinary(file);
+      r.attachments.push(att);
+    }
+    await persist(); render(); renderAttachList();
+  }catch(err){
+    alert('Erro ao enviar: '+err.message);
+    zone.innerHTML=origHTML;
   }
-  persist(); render(); renderAttachList();
   e.target.value='';
 }
 
@@ -617,40 +604,31 @@ async function dropFile(e){
   if(!files.length){ alert('Apenas PDF, JPEG e PNG são aceitos.'); return; }
   const r=data[attachType][attachIdx];
   if(!r.attachments) r.attachments=[];
-  for(const file of files){
-    const id=genId();
-    const buf=await file.arrayBuffer();
-    await saveFile({id,name:file.name,type:file.type,size:file.size,data:buf});
-    r.attachments.push({id,name:file.name,type:file.type,size:file.size});
-  }
-  persist(); render(); renderAttachList();
-}
-
-async function viewFile(id,type,name){
-  const f=await getFile(id);
-  if(!f) return;
-  const blob=new Blob([f.data],{type:f.type||type});
-  const url=URL.createObjectURL(blob);
-  const isPdf=(f.type||type)==='application/pdf';
-  if(isPdf){
-    // PDFs: force download (most reliable on mobile)
-    const a=document.createElement('a');
-    a.href=url; a.download=name||f.name||'orcamento.pdf'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    setTimeout(()=>URL.revokeObjectURL(url),5000);
-  } else {
-    // Images: show inline preview
-    showImagePreview(url,name||f.name);
+  const zone=document.getElementById('attach-zone');
+  const origHTML=zone.innerHTML;
+  zone.innerHTML='<p style="color:var(--teal-dark);font-weight:600">⏳ Enviando para a nuvem...</p>';
+  try{
+    for(const file of files){
+      const att=await uploadToCloudinary(file);
+      r.attachments.push(att);
+    }
+    await persist(); render(); renderAttachList();
+  }catch(err){
+    alert('Erro ao enviar: '+err.message);
+    zone.innerHTML=origHTML;
   }
 }
 
-async function downloadFile(id,type,name){
-  const f=await getFile(id);
-  if(!f) return;
-  const blob=new Blob([f.data],{type:f.type||type});
-  const url=URL.createObjectURL(blob);
+function viewFile(id,type,name,url){
+  const isPdf=(type||'').includes('pdf');
+  if(isPdf){ window.open(url,'_blank'); }
+  else { showImagePreview(url,name); }
+}
+
+function downloadFile(id,type,name,url){
   const a=document.createElement('a');
-  a.href=url; a.download=name||f.name||'arquivo'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  setTimeout(()=>URL.revokeObjectURL(url),5000);
+  a.href=url; a.download=name||'arquivo'; a.target='_blank';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
 }
 
 function showImagePreview(url,name){
@@ -679,27 +657,17 @@ function closeImagePreview(){
   if(o) o.style.display='none';
 }
 
-async function printFile(id,type,name){
-  // On mobile, just download — printing from mobile is not reliable
-  await downloadFile(id,type,name);
-}
-
-async function printAll(){
+function printAll(){
   const r=data[attachType][attachIdx];
-  if(!r.attachments||!r.attachments.length){ alert('Nenhum anexo para baixar.'); return; }
-  for(const a of r.attachments){
-    await downloadFile(a.id,a.type,a.name);
-    await new Promise(res=>setTimeout(res,500));
-  }
+  if(!r.attachments||!r.attachments.length){ alert('Nenhum anexo.'); return; }
+  r.attachments.forEach(a=>window.open(a.url,'_blank'));
 }
 
 async function removeAttach(idx){
   if(!confirm('Remover este anexo?')) return;
   const r=data[attachType][attachIdx];
-  const a=r.attachments[idx];
-  await deleteFile(a.id);
   r.attachments.splice(idx,1);
-  persist(); render(); renderAttachList();
+  await persist(); render(); renderAttachList();
 }
 
 // ---- IMPRIMIR CADERNO ----
@@ -1073,7 +1041,7 @@ document.getElementById('attach-overlay').addEventListener('click',function(e){ 
 document.getElementById('setup-overlay').addEventListener('click',function(e){ if(e.target===this) closeSetup(); });
 document.addEventListener('keydown',function(e){ if(e.key==='Escape'){ closeModal(); closeAttach(); closeSetup(); } });
 
-openDB().then(load);
+load();
 </script>
 </body>
 </html>
