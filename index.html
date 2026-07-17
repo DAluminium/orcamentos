@@ -207,6 +207,7 @@ svg.icon{width:14px;height:14px;vertical-align:middle;fill:none;stroke:currentCo
       <div class="form-grid">
         <div class="form-group span2"><label>Seu nome</label><input id="f-by" type="text" placeholder="Ex: Ander"><span class="note">Identifica quem lançou este orçamento</span></div>
         <div class="form-group span2"><label>Obra / Cliente <span style="color:var(--red)">*</span></label><input id="f-obra" type="text" placeholder="Ex: Wanderley — Casa 113"></div>
+        <div class="form-group span2"><label>Nº do Contrato <span style="color:var(--red)">*</span></label><input id="f-contrato" type="text" placeholder="Ex: 2026-0045"></div>
         <div class="form-group"><label>Tipo de projeto</label>
           <select id="f-tipo">
             <option value="padrao">Padrão — alerta 30 dias antes</option>
@@ -406,6 +407,7 @@ function renderTable(type,isPago){
   tbody.innerHTML = rows.map((r,i)=>{
     const val='R$\u00a0'+fmtBR(r.valor);
     const byLabel=r.by?`<span class="td-by">por ${r.by}</span>`:'';
+    const contratoLabel=r.contrato?`<span class="td-by" style="color:var(--teal-dark);font-weight:600">Contrato: ${r.contrato}</span>`:'';
     const tipoLabel=!isPago?(r.tipo==='especial'
       ?`<span class="badge-especial">✦ Especial</span> `
       :`<span class="badge-padrao">Padrão</span> `):'';
@@ -428,7 +430,7 @@ function renderTable(type,isPago){
     const pixInfo=r.pix?`<span class="td-by" style="display:flex;align-items:center;gap:3px"><svg style="width:10px;height:10px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>${r.pix}</span>`:'';
     return`<tr>
       <td class="td-num">${i+1}</td>
-      <td class="td-obra">${r.obra}${byLabel}</td>
+      <td class="td-obra">${r.obra}${contratoLabel}${byLabel}</td>
       <td>${r.material||'—'}</td>
       <td style="color:var(--gray-4)">${r.nrOrc||'—'}</td>
       <td>${r.fornecedor}${pixInfo}</td>
@@ -481,6 +483,7 @@ function openModal(type,idx=null){
     const r=data[type][idx];
     document.getElementById('f-by').value=r.by||'';
     document.getElementById('f-obra').value=r.obra||'';
+    document.getElementById('f-contrato').value=r.contrato||'';
     document.getElementById('f-material').value=r.material||'';
     document.getElementById('f-nrorc').value=r.nrOrc||'';
     document.getElementById('f-fornecedor').value=r.fornecedor||'';
@@ -496,7 +499,7 @@ function openModal(type,idx=null){
     document.getElementById('f-conta').value=r.conta||'';
     document.getElementById('modal-title').textContent='Editar orçamento';
   } else {
-    ['f-obra','f-material','f-nrorc','f-fornecedor','f-valor','f-dataorc','f-entrega','f-datapag','f-pix','f-pix-nome','f-banco','f-conta'].forEach(id=>document.getElementById(id).value='');
+    ['f-obra','f-contrato','f-material','f-nrorc','f-fornecedor','f-valor','f-dataorc','f-entrega','f-datapag','f-pix','f-pix-nome','f-banco','f-conta'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('f-by').value=lastBy;
     document.getElementById('f-status').value='Pendente';
     document.getElementById('f-tipo').value='padrao';
@@ -513,6 +516,7 @@ function saveEntry(){
   if(byVal) lastBy=byVal;
   const entry={
     obra:document.getElementById('f-obra').value.trim(),
+    contrato:document.getElementById('f-contrato').value.trim(),
     material:document.getElementById('f-material').value.trim(),
     nrOrc:document.getElementById('f-nrorc').value.trim(),
     fornecedor:document.getElementById('f-fornecedor').value.trim(),
@@ -529,7 +533,7 @@ function saveEntry(){
     attachments: editId!==null ? (data[modalType][editId].attachments||[]) : [],
   };
   if(modalType==='pago') entry.dataPag=document.getElementById('f-datapag').value;
-  if(!entry.obra){ alert('O campo Obra / Cliente é obrigatório.'); return; }
+  if(!entry.obra||!entry.contrato){ alert('Obra / Cliente e Nº do Contrato são obrigatórios.'); return; }
   if(editId!==null){ data[modalType][editId]=entry; }
   else { data[modalType].push(entry); }
   persist(); render(); closeModal();
