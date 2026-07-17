@@ -390,6 +390,42 @@ function load(){
 }
 function persist(){ localStorage.setItem('dalum-data',JSON.stringify(data)); }
 
+function reclassifyAll(){
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  function getDiff(r){
+    if(!r.entrega||r.entrega==='—') return null;
+    const dt=new Date(r.entrega); dt.setHours(0,0,0,0);
+    return Math.round((dt-today)/(1000*60*60*24));
+  }
+
+  // Move importante → urgente when lead time is compromised
+  const toUrgente=[];
+  data.importante.forEach((r,i)=>{
+    const diff=getDiff(r); if(diff===null) return;
+    const threshold=r.tipo==='especial'?60:30;
+    if(diff<=threshold) toUrgente.push(i);
+  });
+  toUrgente.reverse().forEach(i=>{
+    const r=data.importante[i];
+    data.urgente.push({...r, status:'Atrasada'});
+    data.importante.splice(i,1);
+  });
+
+  // Move urgente → importante when still within safe lead time
+  const toImportante=[];
+  data.urgente.forEach((r,i)=>{
+    const diff=getDiff(r); if(diff===null) return;
+    const threshold=r.tipo==='especial'?60:30;
+    if(diff>threshold) toImportante.push(i);
+  });
+  toImportante.reverse().forEach(i=>{
+    const r=data.urgente[i];
+    data.importante.push({...r, status:'Pendente'});
+    data.urgente.splice(i,1);
+  });
+}
+
 function render(){
   renderTable('urgente',false);
   renderTable('importante',false);
@@ -536,7 +572,8 @@ function saveEntry(){
   if(!entry.obra||!entry.contrato){ alert('Obra / Cliente e Nº do Contrato são obrigatórios.'); return; }
   if(editId!==null){ data[modalType][editId]=entry; }
   else { data[modalType].push(entry); }
-  persist(); render(); closeModal();
+  reclassifyAll();
+  persist(); render(); checkNotifications(); closeModal();
 }
 function editEntry(type,idx){ openModal(type,idx); }
 function removeEntry(type,idx){
@@ -1105,6 +1142,7 @@ async function syncFromCloud(){
     const remote=await fetchBin(cfg.apiKey,cfg.binId);
     localStorage.setItem('dalum-data',JSON.stringify(remote));
     data=remote;
+    reclassifyAll();
     render();
     checkNotifications();
     setStatus('🟢 Sincronizado · '+new Date().toLocaleTimeString('pt-BR'));
@@ -1138,6 +1176,8 @@ async function load(){
     const saved=localStorage.getItem('dalum-data');
     data=saved?JSON.parse(saved):JSON.parse(JSON.stringify(INITIAL));
   }catch{ data=JSON.parse(JSON.stringify(INITIAL)); }
+  render();
+  reclassifyAll();
   render();
   checkNotifications();
   if(cfg){
