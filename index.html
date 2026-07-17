@@ -106,6 +106,8 @@ input[type=text]:focus,input[type=date]:focus,select:focus{outline:none;border-c
 .notif-item:last-child{border-bottom:none}
 .notif-close{margin-left:auto;cursor:pointer;opacity:0.6;font-size:16px;flex-shrink:0;padding:0 4px}
 .notif-close:hover{opacity:1}
+.badge-padrao{background:#E6F8FB;color:#0E8FA6;font-size:10px;padding:1px 6px;border-radius:10px;font-weight:600;white-space:nowrap}
+.badge-especial{background:#F3E8FF;color:#7B2D8B;font-size:10px;padding:1px 6px;border-radius:10px;font-weight:600;white-space:nowrap}
 svg.icon{width:14px;height:14px;vertical-align:middle;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 @media(max-width:700px){.summary{grid-template-columns:1fr 1fr}.topbar-logo span{display:none}}
 @media(max-width:480px){.summary{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.form-group.span2{grid-column:1}}
@@ -211,6 +213,12 @@ svg.icon{width:14px;height:14px;vertical-align:middle;fill:none;stroke:currentCo
         <div class="form-group"><label>Valor (R$)</label><input id="f-valor" type="text" placeholder="Ex: 1.195,91"></div>
         <div class="form-group" id="status-group"><label>Status</label>
           <select id="f-status"><option value="Pendente">Pendente</option><option value="Atrasada">Atrasada</option><option value="OK">OK</option></select>
+        </div>
+        <div class="form-group"><label>Tipo de projeto</label>
+          <select id="f-tipo">
+            <option value="padrao">Padrão — alerta 30 dias antes</option>
+            <option value="especial">Especial — alerta 60 dias antes</option>
+          </select>
         </div>
         <div class="form-group"><label>Data do orçamento</label><input id="f-dataorc" type="date"></div>
         <div class="form-group"><label>Data de entrega da obra</label><input id="f-entrega" type="date"></div>
@@ -397,7 +405,10 @@ function renderTable(type,isPago){
   tbody.innerHTML = rows.map((r,i)=>{
     const val='R$\u00a0'+fmtBR(r.valor);
     const byLabel=r.by?`<span class="td-by">por ${r.by}</span>`:'';
-    const statusCell=isPago?`<td><span class="pill pill-pago">Pago</span></td>`:`<td><span class="pill ${statusClass(r.status)}">${r.status||'Pendente'}</span></td>`;
+    const tipoLabel=!isPago?(r.tipo==='especial'
+      ?`<span class="badge-especial">✦ Especial</span> `
+      :`<span class="badge-padrao">Padrão</span> `):'';
+    const statusCell=isPago?`<td><span class="pill pill-pago">Pago</span></td>`:`<td>${tipoLabel}<span class="pill ${statusClass(r.status)}">${r.status||'Pendente'}</span></td>`;
     const extraCol=isPago?`<td>${fmtDate(r.dataPag)}</td>`:'';
     const hasFiles=(r.attachments&&r.attachments.length>0);
     const attachBtn=`<td><button class="act act-attach ${hasFiles?'has-files':''}" onclick="openAttach('${type}',${i})" title="${hasFiles?r.attachments.length+' anexo(s)':'Adicionar anexo'}">
@@ -476,6 +487,7 @@ function openModal(type,idx=null){
     document.getElementById('f-dataorc').value=r.dataOrc||'';
     document.getElementById('f-entrega').value=(r.entrega&&r.entrega!=='—')?r.entrega:'';
     document.getElementById('f-status').value=r.status||'Pendente';
+    document.getElementById('f-tipo').value=r.tipo||'padrao';
     document.getElementById('f-datapag').value=r.dataPag||'';
     document.getElementById('f-pix').value=r.pix||'';
     document.getElementById('f-pix-nome').value=r.pixNome||'';
@@ -486,6 +498,7 @@ function openModal(type,idx=null){
     ['f-obra','f-material','f-nrorc','f-fornecedor','f-valor','f-dataorc','f-entrega','f-datapag','f-pix','f-pix-nome','f-banco','f-conta'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('f-by').value=lastBy;
     document.getElementById('f-status').value='Pendente';
+    document.getElementById('f-tipo').value='padrao';
     document.getElementById('modal-title').textContent='Novo orçamento — '+(type==='urgente'?'Urgente':type==='importante'?'Importante':'Pago');
   }
   document.getElementById('modal-overlay').classList.add('open');
@@ -506,6 +519,7 @@ function saveEntry(){
     dataOrc:document.getElementById('f-dataorc').value,
     entrega:document.getElementById('f-entrega').value||'—',
     status:document.getElementById('f-status').value,
+    tipo:document.getElementById('f-tipo').value||'padrao',
     by:byVal,
     pix:document.getElementById('f-pix').value.trim(),
     pixNome:document.getElementById('f-pix-nome').value.trim(),
@@ -708,11 +722,13 @@ function imprimirCaderno(){
     if(!r.entrega||r.entrega==='—') return;
     const dt=new Date(r.entrega); dt.setHours(0,0,0,0);
     const diff=Math.round((dt-today)/(1000*60*60*24));
-    const label=`${r.obra} — ${r.fornecedor} (R$ ${Number(r.valor).toLocaleString('pt-BR',{minimumFractionDigits:2})})`;
+    const threshold=r.tipo==='especial'?60:30;
+    const tipoLabel=r.tipo==='especial'?'✦ Especial':'Padrão';
+    const label=`${r.obra} — ${r.fornecedor} [${tipoLabel}] (R$ ${Number(r.valor).toLocaleString('pt-BR',{minimumFractionDigits:2})})`;
     const entregaStr=r.entrega?r.entrega.split('-').reverse().join('/'):'';
     if(diff<0) overdue.push({label,days:Math.abs(diff),entrega:entregaStr});
     else if(diff===0) dueToday.push({label,entrega:entregaStr});
-    else if(diff<=3) dueSoon.push({label,days:diff,entrega:entregaStr});
+    else if(diff<=threshold) dueSoon.push({label,days:diff,threshold,entrega:entregaStr});
   });
 
   function alertSection(){
@@ -739,7 +755,7 @@ function imprimirCaderno(){
       html+=`<div style="background:#E6F8FB;border-left:4px solid #0E8FA6;border-radius:4px;padding:8px 12px;margin-bottom:8px">
         <div style="font-size:11px;font-weight:700;color:#0E8FA6;margin-bottom:6px">⏰ ENTREGA NOS PRÓXIMOS 3 DIAS (${dueSoon.length})</div>
         <table style="width:100%;border-collapse:collapse;font-size:10px">
-          ${dueSoon.map(o=>`<tr><td style="padding:3px 0;border-bottom:1px solid #b2e5ee;width:65%">${o.label}</td><td style="text-align:right;color:#0E8FA6;font-weight:700;padding:3px 0;border-bottom:1px solid #b2e5ee">Entrega: ${o.entrega} · em ${o.days} dia${o.days>1?'s':''}</td></tr>`).join('')}
+          ${dueSoon.map(o=>`<tr><td style="padding:3px 0;border-bottom:1px solid #b2e5ee;width:65%">${o.label}</td><td style="text-align:right;color:#0E8FA6;font-weight:700;padding:3px 0;border-bottom:1px solid #b2e5ee">Entrega: ${o.entrega} · em ${o.days} dia${o.days>1?'s':''} (alerta ${o.threshold}d)</td></tr>`).join('')}
         </table></div>`;
     }
     html+=`</div>`;
@@ -941,10 +957,12 @@ function checkNotifications(){
     if(!r.entrega || r.entrega==='—') return;
     const dt = new Date(r.entrega); dt.setHours(0,0,0,0);
     const diff = Math.round((dt-today)/(1000*60*60*24));
-    const label = `${r.obra} — ${r.fornecedor} (R$ ${fmtBR(r.valor)})`;
-    if(diff < 0) overdue.push({label, days: Math.abs(diff)});
-    else if(diff === 0) dueToday.push({label});
-    else if(diff <= 3) dueSoon.push({label, days: diff});
+    const threshold = r.tipo==='especial' ? 60 : 30;
+    const tipoLabel = r.tipo==='especial' ? '✦ Especial' : 'Padrão';
+    const label = `${r.obra} — ${r.fornecedor} [${tipoLabel}] (R$ ${fmtBR(r.valor)})`;
+    if(diff < 0) overdue.push({label, days: Math.abs(diff), tipo: r.tipo||'padrao'});
+    else if(diff === 0) dueToday.push({label, tipo: r.tipo||'padrao'});
+    else if(diff <= threshold) dueSoon.push({label, days: diff, threshold, tipo: r.tipo||'padrao'});
   });
 
   showBanner(overdue, dueToday, dueSoon);
@@ -984,9 +1002,9 @@ function showBanner(overdue, dueToday, dueSoon){
   if(dueSoon.length){
     html+=`<div class="notif-banner notif-banner-info">
       <div style="flex:1">
-        <strong>⏰ ${dueSoon.length} orçamento${dueSoon.length>1?'s':''} com entrega nos próximos 3 dias</strong>
+        <strong>⏰ ${dueSoon.length} orçamento${dueSoon.length>1?'s':''} dentro do prazo de alerta</strong>
         <div style="margin-top:6px">
-          ${dueSoon.map(o=>`<div class="notif-item">📌 ${o.label} — em <strong>${o.days} dia${o.days>1?'s':''}</strong></div>`).join('')}
+          ${dueSoon.map(o=>`<div class="notif-item">📌 ${o.label} — em <strong>${o.days} dia${o.days>1?'s':''}</strong> <span style="opacity:.7">(alerta ${o.threshold} dias)</span></div>`).join('')}
         </div>
       </div>
       <span class="notif-close" onclick="this.parentElement.style.display='none'">✕</span>
