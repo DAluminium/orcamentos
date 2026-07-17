@@ -752,10 +752,11 @@ function imprimirCaderno(){
         </table></div>`;
     }
     if(dueSoon.length){
-      html+=`<div style="background:#E6F8FB;border-left:4px solid #0E8FA6;border-radius:4px;padding:8px 12px;margin-bottom:8px">
-        <div style="font-size:11px;font-weight:700;color:#0E8FA6;margin-bottom:6px">⏰ ENTREGA NOS PRÓXIMOS 3 DIAS (${dueSoon.length})</div>
+      html+=`<div style="background:#FFF0F0;border-left:4px solid #8B0000;border-radius:4px;padding:8px 12px;margin-bottom:8px">
+        <div style="font-size:11px;font-weight:700;color:#8B0000;margin-bottom:2px">🔴 LEAD TIME COMPROMETIDO — COMPRA URGENTE! (${dueSoon.length})</div>
+        <div style="font-size:9px;color:#8B0000;margin-bottom:6px">O prazo de entrega do material já passou. Compre imediatamente!</div>
         <table style="width:100%;border-collapse:collapse;font-size:10px">
-          ${dueSoon.map(o=>`<tr><td style="padding:3px 0;border-bottom:1px solid #b2e5ee;width:65%">${o.label}</td><td style="text-align:right;color:#0E8FA6;font-weight:700;padding:3px 0;border-bottom:1px solid #b2e5ee">Entrega: ${o.entrega} · em ${o.days} dia${o.days>1?'s':''} (alerta ${o.threshold}d)</td></tr>`).join('')}
+          ${dueSoon.map(o=>`<tr><td style="padding:3px 0;border-bottom:1px solid #f5c4c4;width:60%">${o.label}</td><td style="text-align:right;color:#8B0000;font-weight:700;padding:3px 0;border-bottom:1px solid #f5c4c4">Entrega: ${o.entrega} · em ${o.days}d · compra atrasada ${o.threshold-o.days}d (lead ${o.threshold}d)</td></tr>`).join('')}
         </table></div>`;
     }
     html+=`</div>`;
@@ -951,7 +952,7 @@ tbody tr:last-child td{border-bottom:none}
 // ---- NOTIFICATION SYSTEM ----
 function checkNotifications(){
   const today = new Date(); today.setHours(0,0,0,0);
-  const overdue=[]; const dueToday=[]; const dueSoon=[];
+  const overdue=[], dueToday=[], leadCompromised=[], onTime=[];
 
   [...data.urgente, ...data.importante].forEach(r=>{
     if(!r.entrega || r.entrega==='—') return;
@@ -960,25 +961,32 @@ function checkNotifications(){
     const threshold = r.tipo==='especial' ? 60 : 30;
     const tipoLabel = r.tipo==='especial' ? '✦ Especial' : 'Padrão';
     const label = `${r.obra} — ${r.fornecedor} [${tipoLabel}] (R$ ${fmtBR(r.valor)})`;
-    if(diff < 0) overdue.push({label, days: Math.abs(diff), tipo: r.tipo||'padrao'});
-    else if(diff === 0) dueToday.push({label, tipo: r.tipo||'padrao'});
-    else if(diff <= threshold) dueSoon.push({label, days: diff, threshold, tipo: r.tipo||'padrao'});
+
+    if(diff < 0){
+      overdue.push({label, days: Math.abs(diff), tipo: r.tipo||'padrao'});
+    } else if(diff === 0){
+      dueToday.push({label, tipo: r.tipo||'padrao'});
+    } else if(diff <= threshold){
+      // Within threshold — Lead Time comprometido
+      leadCompromised.push({label, days: diff, threshold, tipo: r.tipo||'padrao'});
+    }
+    // else: fora do prazo de alerta — no prazo, sem notificação
   });
 
-  showBanner(overdue, dueToday, dueSoon);
-  sendBrowserNotifications(overdue, dueToday, dueSoon);
+  showBanner(overdue, dueToday, leadCompromised);
+  sendBrowserNotifications(overdue, dueToday, leadCompromised);
 }
 
-function showBanner(overdue, dueToday, dueSoon){
+function showBanner(overdue, dueToday, leadCompromised){
   const banner = document.getElementById('notif-banner');
-  if(!overdue.length && !dueToday.length && !dueSoon.length){ banner.style.display='none'; return; }
+  if(!overdue.length && !dueToday.length && !leadCompromised.length){ banner.style.display='none'; return; }
 
   let html='';
 
   if(overdue.length){
     html+=`<div class="notif-banner notif-banner-error">
       <div style="flex:1">
-        <strong>🚨 ${overdue.length} orçamento${overdue.length>1?'s':''} com entrega ATRASADA</strong>
+        <strong>🚨 ${overdue.length} obra${overdue.length>1?'s':''} com entrega ATRASADA</strong>
         <div style="margin-top:6px">
           ${overdue.map(o=>`<div class="notif-item">⚠️ ${o.label} — <strong>${o.days} dia${o.days>1?'s':''} de atraso</strong></div>`).join('')}
         </div>
@@ -990,7 +998,7 @@ function showBanner(overdue, dueToday, dueSoon){
   if(dueToday.length){
     html+=`<div class="notif-banner notif-banner-warning">
       <div style="flex:1">
-        <strong>📅 ${dueToday.length} orçamento${dueToday.length>1?'s':''} com entrega HOJE</strong>
+        <strong>📅 ${dueToday.length} obra${dueToday.length>1?'s':''} com entrega HOJE</strong>
         <div style="margin-top:6px">
           ${dueToday.map(o=>`<div class="notif-item">🔔 ${o.label}</div>`).join('')}
         </div>
@@ -999,13 +1007,18 @@ function showBanner(overdue, dueToday, dueSoon){
     </div>`;
   }
 
-  if(dueSoon.length){
-    html+=`<div class="notif-banner notif-banner-info">
+  if(leadCompromised.length){
+    // Separate by tipo for clearer message
+    const especial = leadCompromised.filter(o=>o.tipo==='especial');
+    const padrao = leadCompromised.filter(o=>o.tipo!=='especial');
+    html+=`<div class="notif-banner notif-banner-error" style="background:#FFF0F0;border-left-color:#8B0000">
       <div style="flex:1">
-        <strong>⏰ ${dueSoon.length} orçamento${dueSoon.length>1?'s':''} dentro do prazo de alerta</strong>
-        <div style="margin-top:6px">
-          ${dueSoon.map(o=>`<div class="notif-item">📌 ${o.label} — em <strong>${o.days} dia${o.days>1?'s':''}</strong> <span style="opacity:.7">(alerta ${o.threshold} dias)</span></div>`).join('')}
-        </div>
+        <strong>🔴 ${leadCompromised.length} obra${leadCompromised.length>1?'s':''} com LEAD TIME COMPROMETIDO — compra urgente!</strong>
+        <div style="font-size:11px;color:#8B0000;margin:4px 0 8px">O prazo de entrega do material já está comprometido. Compre imediatamente!</div>
+        ${padrao.length?`<div style="font-size:11px;font-weight:700;color:#8B0000;margin-bottom:4px">📦 Padrão (Lead Time 30 dias)</div>
+          ${padrao.map(o=>`<div class="notif-item">🔴 ${o.label} — entrega em <strong>${o.days} dia${o.days>1?'s':''}</strong> — compra atrasada ${o.threshold-o.days} dia${o.threshold-o.days>1?'s':''}</div>`).join('')}`:''}
+        ${especial.length?`<div style="font-size:11px;font-weight:700;color:#8B0000;margin-top:6px;margin-bottom:4px">✦ Especial (Lead Time 60 dias)</div>
+          ${especial.map(o=>`<div class="notif-item">🔴 ${o.label} — entrega em <strong>${o.days} dia${o.days>1?'s':''}</strong> — compra atrasada ${o.threshold-o.days} dia${o.threshold-o.days>1?'s':''}</div>`).join('')}`:''}
       </div>
       <span class="notif-close" onclick="this.parentElement.style.display='none'">✕</span>
     </div>`;
@@ -1015,27 +1028,27 @@ function showBanner(overdue, dueToday, dueSoon){
   banner.style.display='block';
 }
 
-async function sendBrowserNotifications(overdue, dueToday, dueSoon){
+async function sendBrowserNotifications(overdue, dueToday, leadCompromised){
   if(!('Notification' in window)) return;
   let permission = Notification.permission;
   if(permission==='default') permission = await Notification.requestPermission();
   if(permission!=='granted') return;
 
-  const send=(title,body,icon='🔔')=>{
+  const send=(title,body)=>{
     try{ new Notification(title,{body,icon:'/favicon.ico',tag:title}); }catch(e){}
   };
 
   overdue.forEach(o=>send(
     '🚨 Entrega Atrasada — Daluminium',
-    `${o.label} está ${o.days} dia${o.days>1?'s':''} atrasado!`
+    `${o.label} — ${o.days} dia${o.days>1?'s':''} de atraso!`
   ));
   dueToday.forEach(o=>send(
     '📅 Entrega Hoje — Daluminium',
     o.label
   ));
-  dueSoon.forEach(o=>send(
-    `⏰ Entrega em ${o.days} dia${o.days>1?'s':''} — Daluminium`,
-    o.label
+  leadCompromised.forEach(o=>send(
+    '🔴 Lead Time Comprometido — Daluminium',
+    `${o.label} — entrega em ${o.days} dias. Compra atrasada ${o.threshold-o.days} dia${o.threshold-o.days>1?'s':''}!`
   ));
 }
 
